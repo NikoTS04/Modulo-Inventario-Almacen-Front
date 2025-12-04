@@ -74,6 +74,34 @@ const CategoriesPage: React.FC = () => {
     }
   };
 
+  const handleDeletePermanent = async (id: string, nombre: string) => {
+    try {
+      // Primero verificar si tiene materiales
+      const hasMaterials = await categoriesAPI.hasMaterials(id);
+      
+      if (hasMaterials) {
+        alert(
+          `No se puede eliminar la categoría "${nombre}" porque tiene materiales asignados.\n\n` +
+          'Primero debe reasignar o eliminar los materiales asociados.'
+        );
+        return;
+      }
+
+      if (!window.confirm(
+        `¿Está seguro de ELIMINAR PERMANENTEMENTE la categoría "${nombre}"?\n\n` +
+        'Esta acción NO se puede deshacer. La categoría será eliminada de la base de datos.'
+      )) {
+        return;
+      }
+
+      await categoriesAPI.deletePermanent(id);
+      alert(`Categoría "${nombre}" eliminada permanentemente.`);
+      loadCategories();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Error al eliminar categoría');
+    }
+  };
+
   const handleCancelForm = () => {
     setShowForm(false);
     setEditingCategory(null);
@@ -168,12 +196,23 @@ const CategoriesPage: React.FC = () => {
                     Desactivar
                   </button>
                 ) : (
-                  <button
-                    className="btn btn-success"
-                    onClick={() => handleActivate(category.categoriaId)}
-                  >
-                    Activar
-                  </button>
+                  <>
+                    <button
+                      className="btn btn-success"
+                      onClick={() => handleActivate(category.categoriaId)}
+                      style={{ marginRight: '0.5rem' }}
+                    >
+                      Activar
+                    </button>
+                    <button
+                      className="btn"
+                      onClick={() => handleDeletePermanent(category.categoriaId, category.nombre)}
+                      style={{ background: '#dc3545', color: 'white' }}
+                      title="Eliminar permanentemente (solo si no tiene materiales)"
+                    >
+                      🗑️ Eliminar
+                    </button>
+                  </>
                 )}
               </td>
             </tr>

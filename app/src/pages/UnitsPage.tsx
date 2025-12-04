@@ -80,6 +80,34 @@ const UnitsPage: React.FC = () => {
     }
   };
 
+  const handleDeletePermanent = async (id: string, nombre: string) => {
+    try {
+      // Primero verificar si tiene materiales
+      const hasMaterials = await unitsAPI.hasMaterials(id);
+      
+      if (hasMaterials) {
+        alert(
+          `No se puede eliminar la unidad "${nombre}" porque tiene materiales asignados.\n\n` +
+          'Primero debe reasignar o eliminar los materiales asociados.'
+        );
+        return;
+      }
+
+      if (!window.confirm(
+        `¿Está seguro de ELIMINAR PERMANENTEMENTE la unidad "${nombre}"?\n\n` +
+        'Esta acción NO se puede deshacer. La unidad será eliminada de la base de datos.'
+      )) {
+        return;
+      }
+
+      await unitsAPI.deletePermanent(id);
+      alert(`Unidad "${nombre}" eliminada permanentemente.`);
+      loadUnits();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Error al eliminar unidad');
+    }
+  };
+
   const handleCancelForm = () => {
     setShowForm(false);
     setEditingUnit(null);
@@ -191,12 +219,23 @@ const UnitsPage: React.FC = () => {
                     Desactivar
                   </button>
                 ) : (
-                  <button
-                    className="btn btn-success"
-                    onClick={() => handleActivate(unit.unidadId!)}
-                  >
-                    Activar
-                  </button>
+                  <>
+                    <button
+                      className="btn btn-success"
+                      onClick={() => handleActivate(unit.unidadId!)}
+                      style={{ marginRight: '0.5rem' }}
+                    >
+                      Activar
+                    </button>
+                    <button
+                      className="btn"
+                      onClick={() => handleDeletePermanent(unit.unidadId!, unit.nombre)}
+                      style={{ background: '#dc3545', color: 'white' }}
+                      title="Eliminar permanentemente (solo si no tiene materiales)"
+                    >
+                      🗑️ Eliminar
+                    </button>
+                  </>
                 )}
               </td>
             </tr>

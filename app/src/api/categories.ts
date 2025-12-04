@@ -36,4 +36,13 @@ export const categoriesAPI = {
     const response = await apiClient.post(`/categories/${id}/activate`);
     return response.data;
   },
+
+  deletePermanent: async (id: string): Promise<void> => {
+    await apiClient.delete(`/categories/${id}/permanent`);
+  },
+
+  hasMaterials: async (id: string): Promise<boolean> => {
+    const response = await apiClient.get(`/categories/${id}/has-materials`);
+    return response.data;
+  },
 };

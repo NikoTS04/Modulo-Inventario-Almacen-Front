@@ -36,6 +36,7 @@ export interface MaterialCreateDTO {
   unidadBaseId: string;
   activo?: boolean;
   reordenConfig?: ReordenConfig;
+  stockInicial?: number;
 }
 
 export interface MaterialListResponse {

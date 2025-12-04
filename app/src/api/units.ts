@@ -37,4 +37,13 @@ export const unitsAPI = {
     const response = await apiClient.post(`/units/${id}/activate`);
     return response.data;
   },
+
+  deletePermanent: async (id: string): Promise<void> => {
+    await apiClient.delete(`/units/${id}/permanent`);
+  },
+
+  hasMaterials: async (id: string): Promise<boolean> => {
+    const response = await apiClient.get(`/units/${id}/has-materials`);
+    return response.data;
+  },
 };
