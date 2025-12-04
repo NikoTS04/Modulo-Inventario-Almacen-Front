@@ -42,10 +42,10 @@ const GarantiasHomePage: React.FC = () => {
 
         <div className="feature-card">
           <div className="feature-icon">📊</div>
-          <h3>Historial</h3>
+          <h3>Logs</h3>
           <p>Registro de todas las acciones realizadas</p>
-          <Link to="/garantias/historial" className="btn btn-primary">
-            Ver Historial
+          <Link to="/garantias/logs" className="btn btn-primary">
+            Ver Logs
           </Link>
         </div>
       </div>

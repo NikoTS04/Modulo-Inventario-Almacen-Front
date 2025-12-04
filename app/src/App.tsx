@@ -12,6 +12,11 @@ import LogsPage from './pages/LogsPage';
 import DespachosHomePage from './pages/despachos/DespachosHomePage';
 // Proceso de Garantía
 import GarantiasHomePage from './pages/garantias/GarantiasHomePage';
+import NuevaDevolucionPage from './pages/garantias/NuevaDevolucionPage';
+import DevolucionesPendientesPage from './pages/garantias/DevolucionesPendientesPage';
+import ProcesarDevolucionPage from './pages/garantias/ProcesarDevolucionPage';
+import EnReparacionPage from './pages/garantias/EnReparacionPage';
+import HistorialPage from './pages/garantias/HistorialPage';
 
 import NotificationBell from './components/NotificationBell';
 import './App.css';
@@ -86,9 +91,9 @@ const Navigation: React.FC = () => {
           <ul className="nav-links">
             <li><Link to="/garantias" className={location.pathname === '/garantias' ? 'active' : ''}>Inicio</Link></li>
             <li><Link to="/garantias/devoluciones" className={location.pathname === '/garantias/devoluciones' ? 'active' : ''}>Nueva Devolución</Link></li>
-            <li><Link to="/garantias/pendientes" className={location.pathname === '/garantias/pendientes' ? 'active' : ''}>Pendientes</Link></li>
+            <li><Link to="/garantias/pendientes" className={location.pathname === '/garantias/pendientes' || location.pathname.startsWith('/garantias/procesar') ? 'active' : ''}>Pendientes</Link></li>
             <li><Link to="/garantias/reparacion" className={location.pathname === '/garantias/reparacion' ? 'active' : ''}>En Reparación</Link></li>
-            <li><Link to="/garantias/historial" className={location.pathname === '/garantias/historial' ? 'active' : ''}>Historial</Link></li>
+            <li><Link to="/garantias/logs" className={location.pathname === '/garantias/logs' ? 'active' : ''}>Logs</Link></li>
           </ul>
         </div>
       </nav>
@@ -126,10 +131,11 @@ const App: React.FC = () => {
 
             {/* Proceso de Garantía */}
             <Route path="/garantias" element={<GarantiasHomePage />} />
-            <Route path="/garantias/devoluciones" element={<GarantiasHomePage />} />
-            <Route path="/garantias/pendientes" element={<GarantiasHomePage />} />
-            <Route path="/garantias/reparacion" element={<GarantiasHomePage />} />
-            <Route path="/garantias/historial" element={<GarantiasHomePage />} />
+            <Route path="/garantias/devoluciones" element={<NuevaDevolucionPage />} />
+            <Route path="/garantias/pendientes" element={<DevolucionesPendientesPage />} />
+            <Route path="/garantias/procesar/:id" element={<ProcesarDevolucionPage />} />
+            <Route path="/garantias/reparacion" element={<EnReparacionPage />} />
+            <Route path="/garantias/logs" element={<HistorialPage />} />
           </Routes>
         </main>
       </div>
