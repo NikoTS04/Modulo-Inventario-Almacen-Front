@@ -189,17 +189,19 @@ const MaterialsListPage: React.FC = () => {
     <div>
       <div className="page-header">
         <h1 className="page-title">Gestión de Materiales</h1>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button 
-            className="btn btn-success" 
+        {/* Acciones: combinar import/export y usar la ruta remota para creación */}
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <button
+            className="btn btn-success"
             onClick={handleImportClick}
             disabled={importing}
             title="Importar materiales desde archivo CSV"
           >
             {importing ? '⏳ Importando...' : '📥 Importar CSV'}
           </button>
-          <button 
-            className="btn btn-info" 
+
+          <button
+            className="btn btn-info"
             onClick={handleExport}
             disabled={exporting}
             title="Exportar materiales a archivo CSV"
@@ -207,13 +209,14 @@ const MaterialsListPage: React.FC = () => {
           >
             {exporting ? '⏳ Exportando...' : '📤 Exportar CSV'}
           </button>
-          <Link to="/materials/new">
+
+          <Link to="/maestro-materiales/lista/new">
             <button className="btn btn-primary">➕ Crear Nuevo Material</button>
           </Link>
         </div>
       </div>
 
-      {/* Input oculto para selección de archivo */}
+      {/* Input oculto para selección de archivo (import) */}
       <input
         ref={fileInputRef}
         type="file"
@@ -222,6 +225,7 @@ const MaterialsListPage: React.FC = () => {
         onChange={handleFileSelect}
       />
 
+      {/* Mostrar error si existe (solo una vez) */}
       {error && <div className="error">{error}</div>}
 
       {/* Modal de resultado de importación */}
@@ -248,7 +252,7 @@ const MaterialsListPage: React.FC = () => {
             boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
           }}>
             <h2 style={{ marginTop: 0 }}>Resultado de Importación</h2>
-            
+
             <div style={{ marginBottom: '1.5rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
                 <div style={{ textAlign: 'center', padding: '1rem', background: '#f8f9fa', borderRadius: '4px' }}>
@@ -276,9 +280,9 @@ const MaterialsListPage: React.FC = () => {
                     borderRadius: '4px',
                     border: '1px solid #f5c6cb'
                   }}>
-                    {importResult.errores.map((error, index) => (
+                    {importResult.errores.map((errMsg, index) => (
                       <div key={index} style={{ marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                        • {error}
+                        • {errMsg}
                       </div>
                     ))}
                   </div>
@@ -302,8 +306,6 @@ const MaterialsListPage: React.FC = () => {
           </div>
         </div>
       )}
-
-      {error && <div className="error">{error}</div>}
 
       {/* Panel de Filtros */}
       <div style={{ 
@@ -429,7 +431,7 @@ const MaterialsListPage: React.FC = () => {
                 )}
               </td>
               <td>
-                <Link to={`/materials/${material.materialId}/edit`}>
+                <Link to={`/maestro-materiales/lista/${material.materialId}/edit`}>
                   <button className="btn btn-primary" style={{ marginRight: '0.5rem' }}>
                     Editar
                   </button>
