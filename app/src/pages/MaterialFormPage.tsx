@@ -97,7 +97,7 @@ const MaterialFormPage: React.FC = () => {
       } else {
         await materialsAPI.create(formData);
       }
-      navigate('/');
+      navigate('/maestro-materiales/lista');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Error al guardar el material');
       console.error(err);

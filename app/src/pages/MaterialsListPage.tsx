@@ -110,8 +110,8 @@ const MaterialsListPage: React.FC = () => {
     <div>
       <div className="page-header">
         <h1 className="page-title">Gestión de Materiales</h1>
-        <Link to="/materials/new">
-          <button className="btn btn-primary">Crear Nuevo Material</button>
+        <Link to="/maestro-materiales/lista/new">
+          <button className="btn btn-primary">+ Crear Nuevo Material</button>
         </Link>
       </div>
 
@@ -241,7 +241,7 @@ const MaterialsListPage: React.FC = () => {
                 )}
               </td>
               <td>
-                <Link to={`/materials/${material.materialId}/edit`}>
+                <Link to={`/maestro-materiales/lista/${material.materialId}/edit`}>
                   <button className="btn btn-primary" style={{ marginRight: '0.5rem' }}>
                     Editar
                   </button>
