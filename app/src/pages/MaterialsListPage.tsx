@@ -13,9 +13,19 @@ const MaterialsListPage: React.FC = () => {
   
   // Filtros
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [filterActivo, setFilterActivo] = useState<boolean | undefined>(undefined);
   const [sortBy, setSortBy] = useState('nombre');
+
+  // Debounce para búsqueda
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // Esperar 500ms después de que el usuario deje de escribir
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const loadMaterials = async () => {
     try {
@@ -27,7 +37,7 @@ const MaterialsListPage: React.FC = () => {
         sort: sortBy,
         categoria: selectedCategory || undefined,
         activo: filterActivo,
-        search: searchTerm || undefined
+        search: debouncedSearchTerm || undefined
       });
       setMaterials(response.items);
       setTotalPages(response.totalPages);
@@ -54,7 +64,7 @@ const MaterialsListPage: React.FC = () => {
 
   useEffect(() => {
     loadMaterials();
-  }, [page, selectedCategory, filterActivo, sortBy]);
+  }, [page, selectedCategory, filterActivo, sortBy, debouncedSearchTerm]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('¿Está seguro de desactivar este material?')) {
@@ -80,11 +90,12 @@ const MaterialsListPage: React.FC = () => {
 
   const handleSearch = () => {
     setPage(0);
-    loadMaterials();
+    setDebouncedSearchTerm(searchTerm); // Forzar búsqueda inmediata
   };
 
   const handleResetFilters = () => {
     setSearchTerm('');
+    setDebouncedSearchTerm('');
     setSelectedCategory('');
     setFilterActivo(undefined);
     setSortBy('nombre');

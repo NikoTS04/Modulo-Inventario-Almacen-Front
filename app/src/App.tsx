@@ -4,6 +4,8 @@ import MaterialsListPage from './pages/MaterialsListPage';
 import MaterialFormPage from './pages/MaterialFormPage';
 import CategoriesPage from './pages/CategoriesPage';
 import UnitsPage from './pages/UnitsPage';
+import LogsPage from './pages/LogsPage';
+import NotificationBell from './components/NotificationBell';
 import './App.css';
 
 const App: React.FC = () => {
@@ -17,6 +19,10 @@ const App: React.FC = () => {
               <li><Link to="/">Materiales</Link></li>
               <li><Link to="/categories">Categorías</Link></li>
               <li><Link to="/units">Unidades</Link></li>
+              <li><Link to="/logs">Logs</Link></li>
+              <li style={{ marginLeft: 'auto' }}>
+                <NotificationBell />
+              </li>
             </ul>
           </div>
         </nav>
@@ -28,6 +34,7 @@ const App: React.FC = () => {
             <Route path="/materials/:id/edit" element={<MaterialFormPage />} />
             <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/units" element={<UnitsPage />} />
+            <Route path="/logs" element={<LogsPage />} />
           </Routes>
         </main>
       </div>
