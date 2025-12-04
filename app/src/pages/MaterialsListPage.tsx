@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { materialsAPI, Material } from '../api/materials';
+import { materialsAPI, Material, MaterialImportResponse } from '../api/materials';
 import { categoriesAPI, Category } from '../api/categories';
 
 const MaterialsListPage: React.FC = () => {
@@ -17,6 +17,13 @@ const MaterialsListPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [filterActivo, setFilterActivo] = useState<boolean | undefined>(undefined);
   const [sortBy, setSortBy] = useState('nombre');
+
+  // Estados para importación/exportación
+  const [importing, setImporting] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [importResult, setImportResult] = useState<MaterialImportResponse | null>(null);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Debounce para búsqueda
   useEffect(() => {
@@ -102,6 +109,78 @@ const MaterialsListPage: React.FC = () => {
     setPage(0);
   };
 
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validar que sea CSV
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      alert('Por favor seleccione un archivo CSV válido');
+      return;
+    }
+
+    setImporting(true);
+    setError(null);
+
+    try {
+      const result = await materialsAPI.importMaterials(file);
+      setImportResult(result);
+      setShowImportModal(true);
+
+      // Recargar materiales si hubo éxitos
+      if (result.exitosos > 0) {
+        loadMaterials();
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Error al importar materiales');
+      console.error('Error importing materials:', err);
+    } finally {
+      setImporting(false);
+      // Resetear el input para permitir seleccionar el mismo archivo nuevamente
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+    setError(null);
+
+    try {
+      const blob = await materialsAPI.exportMaterials({
+        sort: sortBy,
+        categoria: selectedCategory || undefined,
+        activo: filterActivo,
+        search: debouncedSearchTerm || undefined,
+      });
+
+      // Crear URL y descargar
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `materiales_export_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Error al exportar materiales');
+      console.error('Error exporting materials:', err);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const closeImportModal = () => {
+    setShowImportModal(false);
+    setImportResult(null);
+  };
+
   if (loading) {
     return <div className="loading">Cargando materiales...</div>;
   }
@@ -110,10 +189,119 @@ const MaterialsListPage: React.FC = () => {
     <div>
       <div className="page-header">
         <h1 className="page-title">Gestión de Materiales</h1>
-        <Link to="/materials/new">
-          <button className="btn btn-primary">Crear Nuevo Material</button>
-        </Link>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button 
+            className="btn btn-success" 
+            onClick={handleImportClick}
+            disabled={importing}
+            title="Importar materiales desde archivo CSV"
+          >
+            {importing ? '⏳ Importando...' : '📥 Importar CSV'}
+          </button>
+          <button 
+            className="btn btn-info" 
+            onClick={handleExport}
+            disabled={exporting}
+            title="Exportar materiales a archivo CSV"
+            style={{ background: '#17a2b8', color: 'white' }}
+          >
+            {exporting ? '⏳ Exportando...' : '📤 Exportar CSV'}
+          </button>
+          <Link to="/materials/new">
+            <button className="btn btn-primary">➕ Crear Nuevo Material</button>
+          </Link>
+        </div>
       </div>
+
+      {/* Input oculto para selección de archivo */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv"
+        style={{ display: 'none' }}
+        onChange={handleFileSelect}
+      />
+
+      {error && <div className="error">{error}</div>}
+
+      {/* Modal de resultado de importación */}
+      {showImportModal && importResult && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+        }}>
+          <div style={{
+            background: 'white',
+            padding: '2rem',
+            borderRadius: '8px',
+            maxWidth: '600px',
+            maxHeight: '80vh',
+            overflow: 'auto',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          }}>
+            <h2 style={{ marginTop: 0 }}>Resultado de Importación</h2>
+            
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1rem' }}>
+                <div style={{ textAlign: 'center', padding: '1rem', background: '#f8f9fa', borderRadius: '4px' }}>
+                  <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>{importResult.totalProcesados}</div>
+                  <div style={{ color: '#666' }}>Total Procesados</div>
+                </div>
+                <div style={{ textAlign: 'center', padding: '1rem', background: '#d4edda', borderRadius: '4px' }}>
+                  <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#155724' }}>{importResult.exitosos}</div>
+                  <div style={{ color: '#155724' }}>✅ Exitosos</div>
+                </div>
+                <div style={{ textAlign: 'center', padding: '1rem', background: '#f8d7da', borderRadius: '4px' }}>
+                  <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#721c24' }}>{importResult.fallidos}</div>
+                  <div style={{ color: '#721c24' }}>❌ Fallidos</div>
+                </div>
+              </div>
+
+              {importResult.errores.length > 0 && (
+                <div style={{ marginTop: '1rem' }}>
+                  <h3 style={{ color: '#721c24' }}>Errores Encontrados:</h3>
+                  <div style={{ 
+                    maxHeight: '200px', 
+                    overflow: 'auto', 
+                    background: '#f8d7da', 
+                    padding: '1rem', 
+                    borderRadius: '4px',
+                    border: '1px solid #f5c6cb'
+                  }}>
+                    {importResult.errores.map((error, index) => (
+                      <div key={index} style={{ marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                        • {error}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {importResult.exitosos > 0 && (
+                <div style={{ marginTop: '1rem', padding: '1rem', background: '#d4edda', borderRadius: '4px' }}>
+                  <strong style={{ color: '#155724' }}>
+                    ✅ Se importaron {importResult.exitosos} material(es) correctamente.
+                  </strong>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+              <button className="btn btn-primary" onClick={closeImportModal}>
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {error && <div className="error">{error}</div>}
 

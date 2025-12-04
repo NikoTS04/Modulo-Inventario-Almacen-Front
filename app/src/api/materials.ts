@@ -46,6 +46,14 @@ export interface MaterialListResponse {
   totalPages: number;
 }
 
+export interface MaterialImportResponse {
+  totalProcesados: number;
+  exitosos: number;
+  fallidos: number;
+  errores: string[];
+  materialesCreados: Material[];
+}
+
 export const materialsAPI = {
   list: async (params?: {
     page?: number;
@@ -90,5 +98,30 @@ export const materialsAPI = {
 
   setReorderConfig: async (id: string, config: ReordenConfig): Promise<void> => {
     await apiClient.put(`/materials/${id}/reorder-config`, config);
+  },
+
+  importMaterials: async (file: File): Promise<MaterialImportResponse> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await apiClient.post('/materials/import', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  exportMaterials: async (params?: {
+    sort?: string;
+    categoria?: string;
+    activo?: boolean;
+    search?: string;
+  }): Promise<Blob> => {
+    const response = await apiClient.get('/materials/export', {
+      params,
+      responseType: 'blob',
+    });
+    return response.data;
   },
 };
