@@ -8,7 +8,7 @@ const HistorialPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  
+
   // Filtros
   const [filtroTipo, setFiltroTipo] = useState('');
   const [fechaDesde, setFechaDesde] = useState('');
@@ -41,20 +41,20 @@ const HistorialPage: React.FC = () => {
       console.log('📦 Usando datos mock para historial');
       const mockHistorial: HistorialMovimiento[] = [
         { movimientoId: 'mov-001', devolucionId: 'dev-001', devolucionCodigo: 'DEV-2024-001', tipo: 'REGISTRO', descripcion: 'Devolución registrada en el sistema', usuario: 'admin', fecha: new Date().toISOString() },
-        { movimientoId: 'mov-002', devolucionId: 'dev-001', devolucionCodigo: 'DEV-2024-001', itemId: 'item-001', materialId: 'mat-001', materialNombre: 'Laptop HP ProBook', tipo: 'INSPECCION', cantidad: 1, descripcion: 'Ítem inspeccionado - Resultado: DAÑADO', usuario: 'admin', fecha: new Date(Date.now() - 3600000).toISOString() },
-        { movimientoId: 'mov-003', devolucionId: 'dev-001', devolucionCodigo: 'DEV-2024-001', itemId: 'item-001', materialId: 'mat-001', materialNombre: 'Laptop HP ProBook', tipo: 'REPARACION', cantidad: 1, descripcion: 'Producto enviado a reparación', usuario: 'admin', fecha: new Date(Date.now() - 3500000).toISOString() },
+        { movimientoId: 'mov-002', devolucionId: 'dev-001', devolucionCodigo: 'DEV-2024-001', itemId: 'item-001', materialId: 'mat-001', materialNombre: 'Samsung Galaxy S24', tipo: 'INSPECCION', cantidad: 1, descripcion: 'Ítem inspeccionado - Resultado: DAÑADO', usuario: 'admin', fecha: new Date(Date.now() - 3600000).toISOString() },
+        { movimientoId: 'mov-003', devolucionId: 'dev-001', devolucionCodigo: 'DEV-2024-001', itemId: 'item-001', materialId: 'mat-001', materialNombre: 'Samsung Galaxy S24', tipo: 'REPARACION', cantidad: 1, descripcion: 'Producto enviado a reparación', usuario: 'admin', fecha: new Date(Date.now() - 3500000).toISOString() },
         { movimientoId: 'mov-004', devolucionId: 'dev-002', devolucionCodigo: 'DEV-2024-002', tipo: 'REGISTRO', descripcion: 'Devolución registrada en el sistema', usuario: 'admin', fecha: new Date(Date.now() - 86400000).toISOString() },
-        { movimientoId: 'mov-005', devolucionId: 'dev-002', devolucionCodigo: 'DEV-2024-002', itemId: 'item-003', materialId: 'mat-003', materialNombre: 'Teclado Mecánico', tipo: 'INSPECCION', cantidad: 3, descripcion: 'Ítem inspeccionado - Resultado: APTO', usuario: 'admin', fecha: new Date(Date.now() - 82800000).toISOString() },
-        { movimientoId: 'mov-006', devolucionId: 'dev-002', devolucionCodigo: 'DEV-2024-002', itemId: 'item-003', materialId: 'mat-003', materialNombre: 'Teclado Mecánico', tipo: 'REINTEGRO', cantidad: 3, descripcion: 'Producto reintegrado al stock', usuario: 'admin', fecha: new Date(Date.now() - 82700000).toISOString() },
+        { movimientoId: 'mov-005', devolucionId: 'dev-002', devolucionCodigo: 'DEV-2024-002', itemId: 'item-003', materialId: 'mat-201', materialNombre: 'Cargador USB-C', tipo: 'INSPECCION', cantidad: 3, descripcion: 'Ítem inspeccionado - Resultado: APTO', usuario: 'admin', fecha: new Date(Date.now() - 82800000).toISOString() },
+        { movimientoId: 'mov-006', devolucionId: 'dev-002', devolucionCodigo: 'DEV-2024-002', itemId: 'item-003', materialId: 'mat-201', materialNombre: 'Cargador USB-C', tipo: 'REINTEGRO', cantidad: 3, descripcion: 'Producto reintegrado al stock', usuario: 'admin', fecha: new Date(Date.now() - 82700000).toISOString() },
         { movimientoId: 'mov-007', devolucionId: 'dev-002', devolucionCodigo: 'DEV-2024-002', tipo: 'COMPLETAR', descripcion: 'Devolución completada exitosamente', usuario: 'admin', fecha: new Date(Date.now() - 82600000).toISOString() },
       ];
-      
+
       // Aplicar filtros mock
       let filtrado = mockHistorial;
       if (filtroTipo) {
         filtrado = filtrado.filter(m => m.tipo === filtroTipo);
       }
-      
+
       setHistorial(filtrado);
       setTotalPages(1);
       setError(null);
@@ -163,16 +163,16 @@ const HistorialPage: React.FC = () => {
               const tipoInfo = getTipoInfo(mov.tipo);
               return (
                 <div key={mov.movimientoId} className="timeline-item">
-                  <div 
+                  <div
                     className="timeline-icon"
                     style={{ backgroundColor: tipoInfo.bg, color: tipoInfo.color }}
                   >
                     {tipoInfo.icon}
                   </div>
-                  
+
                   <div className="timeline-content">
                     <div className="timeline-header">
-                      <span 
+                      <span
                         className="timeline-tipo"
                         style={{ backgroundColor: tipoInfo.bg, color: tipoInfo.color }}
                       >
@@ -180,9 +180,9 @@ const HistorialPage: React.FC = () => {
                       </span>
                       <span className="timeline-fecha">{formatearFecha(mov.fecha)}</span>
                     </div>
-                    
+
                     <p className="timeline-descripcion">{mov.descripcion}</p>
-                    
+
                     <div className="timeline-meta">
                       {mov.devolucionCodigo && (
                         <span className="meta-item">

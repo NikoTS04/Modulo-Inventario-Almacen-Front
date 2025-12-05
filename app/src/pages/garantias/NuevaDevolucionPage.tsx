@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { garantiasAPI, DevolucionCreateDTO } from '../../api/garantias';
 import { materialsAPI, Material } from '../../api/materials';
 import { shouldUseMockData } from '../../config/environment';
+import { MOCK_MATERIALS } from '../../data/mockData';
 
 interface ItemFormulario {
   id: string;
@@ -31,6 +32,7 @@ const NuevaDevolucionPage: React.FC = () => {
     cargarMateriales();
   }, []);
 
+
   const cargarMateriales = async () => {
     try {
       const response = await materialsAPI.list({ limit: 100, activo: true });
@@ -39,17 +41,8 @@ const NuevaDevolucionPage: React.FC = () => {
       console.error('Error cargando materiales:', err);
       // Datos mock solo si está habilitado
       if (shouldUseMockData()) {
-        console.log('📦 Usando datos mock para materiales');
-        setMateriales([
-          { materialId: 'mat-001', codigo: 'LAPTOP-001', nombre: 'Laptop HP ProBook', activo: true, categoriaId: '1', unidadBaseId: '1' },
-          { materialId: 'mat-002', codigo: 'MONITOR-001', nombre: 'Monitor Dell 24"', activo: true, categoriaId: '1', unidadBaseId: '1' },
-          { materialId: 'mat-003', codigo: 'TECLADO-001', nombre: 'Teclado Mecánico Logitech', activo: true, categoriaId: '1', unidadBaseId: '1' },
-          { materialId: 'mat-004', codigo: 'MOUSE-001', nombre: 'Mouse Inalámbrico', activo: true, categoriaId: '1', unidadBaseId: '1' },
-          { materialId: 'mat-005', codigo: 'CABLE-HDMI', nombre: 'Cable HDMI 2m', activo: true, categoriaId: '2', unidadBaseId: '1' },
-          { materialId: 'mat-006', codigo: 'AURICULAR-001', nombre: 'Auriculares Bluetooth', activo: true, categoriaId: '1', unidadBaseId: '1' },
-          { materialId: 'mat-007', codigo: 'CARGADOR-001', nombre: 'Cargador Universal 65W', activo: true, categoriaId: '2', unidadBaseId: '1' },
-          { materialId: 'mat-008', codigo: 'USB-HUB', nombre: 'Hub USB 4 puertos', activo: true, categoriaId: '2', unidadBaseId: '1' },
-        ]);
+        console.log('📦 Usando datos mock para materiales (Centralizados)');
+        setMateriales(MOCK_MATERIALS);
       }
     }
   };
@@ -66,14 +59,14 @@ const NuevaDevolucionPage: React.FC = () => {
   };
 
   const actualizarItem = (id: string, campo: keyof ItemFormulario, valor: string | number) => {
-    setItems(items.map(item => 
+    setItems(items.map(item =>
       item.id === id ? { ...item, [campo]: valor } : item
     ));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validaciones
     if (!motivoGeneral.trim()) {
       setError('Debe ingresar un motivo general de la devolución');
@@ -193,8 +186,8 @@ const NuevaDevolucionPage: React.FC = () => {
                 <div className="item-header">
                   <span className="item-number">Producto #{index + 1}</span>
                   {items.length > 1 && (
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       className="btn btn-danger btn-sm"
                       onClick={() => eliminarItem(item.id)}
                     >
@@ -202,7 +195,7 @@ const NuevaDevolucionPage: React.FC = () => {
                     </button>
                   )}
                 </div>
-                
+
                 <div className="form-row">
                   <div className="form-group flex-2">
                     <label>Material *</label>
@@ -262,16 +255,16 @@ const NuevaDevolucionPage: React.FC = () => {
 
         {/* Botones */}
         <div className="form-actions">
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="btn btn-secondary"
             onClick={() => navigate('/garantias')}
             disabled={loading}
           >
             Cancelar
           </button>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="btn btn-primary"
             disabled={loading}
           >

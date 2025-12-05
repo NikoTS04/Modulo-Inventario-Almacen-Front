@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  garantiasAPI, 
-  Devolucion, 
-  DestinoDevolucion, 
+import {
+  garantiasAPI,
+  Devolucion,
+  DestinoDevolucion,
   InspeccionItemDTO,
   EstadoItem,
   EstadoDevolucion
@@ -27,7 +27,7 @@ interface ItemInspeccion {
 const ProcesarDevolucionPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   const [devolucion, setDevolucion] = useState<Devolucion | null>(null);
   const [items, setItems] = useState<ItemInspeccion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +45,7 @@ const ProcesarDevolucionPage: React.FC = () => {
       setLoading(true);
       const data = await garantiasAPI.obtenerDevolucion(devolucionId);
       setDevolucion(data);
-      
+
       // Preparar items para inspección
       setItems(data.items.map(item => ({
         ...item,
@@ -71,9 +71,9 @@ const ProcesarDevolucionPage: React.FC = () => {
         clienteDocumento: '12345678',
         motivoGeneral: 'Producto defectuoso',
         items: [
-          { itemId: 'item-001', materialId: 'mat-001', materialCodigo: 'LAPTOP-001', materialNombre: 'Laptop HP ProBook', cantidad: 1, motivo: 'No enciende', observaciones: 'Cliente reporta que dejó de funcionar hace 2 días', estado: EstadoItem.PENDIENTE },
-          { itemId: 'item-002', materialId: 'mat-002', materialCodigo: 'MONITOR-001', materialNombre: 'Monitor Dell 24"', cantidad: 2, motivo: 'Pantalla dañada', observaciones: 'Líneas verticales en la pantalla', estado: EstadoItem.PENDIENTE },
-          { itemId: 'item-003', materialId: 'mat-003', materialCodigo: 'TECLADO-001', materialNombre: 'Teclado Mecánico Logitech', cantidad: 1, motivo: 'Teclas no responden', estado: EstadoItem.PENDIENTE }
+          { itemId: 'item-001', materialId: 'mat-001', materialCodigo: 'CEL-SAM-S24-256-BLK', materialNombre: 'Samsung Galaxy S24', cantidad: 1, motivo: 'No enciende', observaciones: 'Cliente reporta que dejó de funcionar hace 2 días', estado: EstadoItem.PENDIENTE },
+          { itemId: 'item-002', materialId: 'mat-002', materialCodigo: 'CEL-SAM-S24-256-GRY', materialNombre: 'Samsung Galaxy S24 Gris', cantidad: 2, motivo: 'Pantalla dañada', observaciones: 'Líneas verticales en la pantalla', estado: EstadoItem.PENDIENTE },
+          { itemId: 'item-003', materialId: 'mat-201', materialCodigo: 'ACC-CARG-USB-C-20W', materialNombre: 'Cargador USB-C 20W', cantidad: 1, motivo: 'No carga', estado: EstadoItem.PENDIENTE }
         ]
       };
       setDevolucion(mockDevolucion);
@@ -93,7 +93,7 @@ const ProcesarDevolucionPage: React.FC = () => {
     setItems(items.map(item => {
       if (item.itemId === itemId) {
         const updated = { ...item, [campo]: valor };
-        
+
         // Auto-asignar destino basado en resultado
         if (campo === 'resultado') {
           if (valor === 'APTO') {
@@ -104,7 +104,7 @@ const ProcesarDevolucionPage: React.FC = () => {
             updated.destino = DestinoDevolucion.ELIMINACION;
           }
         }
-        
+
         return updated;
       }
       return item;
@@ -264,11 +264,11 @@ const ProcesarDevolucionPage: React.FC = () => {
                     { value: 'DAÑADO', label: 'Dañado (requiere reparación)', icon: '🔧' },
                     { value: 'NO_RECUPERABLE', label: 'No recuperable', icon: '❌' }
                   ].map(opcion => (
-                    <label 
-                      key={opcion.value} 
+                    <label
+                      key={opcion.value}
                       className={`radio-option ${item.resultado === opcion.value ? 'selected' : ''}`}
-                      style={{ 
-                        borderColor: item.resultado === opcion.value ? getResultadoColor(opcion.value) : undefined 
+                      style={{
+                        borderColor: item.resultado === opcion.value ? getResultadoColor(opcion.value) : undefined
                       }}
                     >
                       <input
@@ -314,7 +314,7 @@ const ProcesarDevolucionPage: React.FC = () => {
 
               {/* Resumen de destino */}
               {item.destino && (
-                <div 
+                <div
                   className="destino-preview"
                   style={{ backgroundColor: getDestinoInfo(item.destino).color + '20', borderColor: getDestinoInfo(item.destino).color }}
                 >
@@ -357,14 +357,14 @@ const ProcesarDevolucionPage: React.FC = () => {
 
       {/* Botones de acción */}
       <div className="form-actions">
-        <button 
+        <button
           className="btn btn-secondary"
           onClick={() => navigate('/garantias/pendientes')}
           disabled={procesando}
         >
           Cancelar
         </button>
-        <button 
+        <button
           className="btn btn-primary"
           onClick={handleProcesar}
           disabled={procesando}
