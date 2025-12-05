@@ -7,11 +7,11 @@
 
 export const config = {
   // URL base del API
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1',
+  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'modulo-inventario-almacen-back-production.up.railway.app/api/v1',
   
   // Usar datos mock cuando el backend no está disponible
   // Cambiar a false antes de desplegar a producción
-  useMockData: import.meta.env.VITE_USE_MOCK_DATA === 'true' || import.meta.env.DEV,
+  useMockData: import.meta.env.VITE_USE_MOCK_DATA === 'false' || import.meta.env.DEV,
   
   // Modo de desarrollo
   isDevelopment: import.meta.env.DEV,
